@@ -21,7 +21,10 @@ func RandomString(length int, alphabet string) string {
 
 	for i := 0; i < length; i++ {
 		c := alphabet[random.Intn(k)]
-		sb.WriteByte(c)
+		err := sb.WriteByte(c)
+		if err != nil {
+			panic(1)
+		}
 	}
 
 	return sb.String()

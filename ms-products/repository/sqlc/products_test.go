@@ -31,3 +31,34 @@ func createRandomProduct(t *testing.T) Product {
 func TestCreateProduct(t *testing.T) {
 	createRandomProduct(t)
 }
+
+func TestGetProduct(t *testing.T) {
+	product := createRandomProduct(t)
+
+	product2, err := testQueries.GetProduct(context.Background(), product.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, product2)
+
+	require.Equal(t, product, product2)
+}
+
+func TestListProduct(t *testing.T) {
+	n := 10
+
+	for i := 0; i < n; i++ {
+		createRandomProduct(t)
+	}
+
+	arg := ListProductsParams{
+		Limit:  int32(n / 2),
+		Offset: int32(n / 2),
+	}
+
+	products, err := testQueries.ListProducts(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, products, n/2)
+
+	for _, product := range products {
+		require.NotEmpty(t, product)
+	}
+}
