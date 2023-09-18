@@ -35,7 +35,7 @@ func TestGetProduct(t *testing.T) {
 			check: func(t *testing.T, productModel *model.Product, err error) {
 				require.NoError(t, err)
 				require.NotEmpty(t, productModel)
-				require.Equal(t, productModel.Product, product)
+				require.Equal(t, productModel, model.ProductDbToModel(product))
 			},
 		},
 		{
@@ -95,7 +95,7 @@ func TestCreateProduct(t *testing.T) {
 			check: func(t *testing.T, productModel *model.Product, err error) {
 				require.NoError(t, err)
 				require.NotEmpty(t, productModel)
-				require.Equal(t, productModel.Product, product)
+				require.Equal(t, productModel, model.ProductDbToModel(product))
 			},
 		},
 		{

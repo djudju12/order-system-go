@@ -87,7 +87,7 @@ func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]P
 		var i Product
 		if err := rows.Scan(
 			&i.ID,
-			&i.Name,
+			&i.Name, 
 			&i.Price,
 			&i.Description,
 		); err != nil {

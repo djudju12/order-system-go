@@ -3,7 +3,10 @@ package model
 import db "github.com/djudju12/ms-products/db/sqlc"
 
 type Product struct {
-	db.Product
+	ID          int32  `json:"id"`
+	Name        string `json:"name"`
+	Price       string `json:"price"`
+	Description string `json:"description"`
 }
 
 type ListProductsRquest struct {
@@ -42,7 +45,19 @@ func (req *CreateProductRequest) ToDB() db.CreateProductParams {
 
 func ProductDbToModel(product db.Product) *Product {
 	return &Product{
-		Product: product,
+		ID:          product.ID,
+		Name:        product.Name,
+		Price:       product.Price,
+		Description: product.Description,
+	}
+}
+
+func ProductModelToDb(product *Product) *db.Product {
+	return &db.Product{
+		ID:          product.ID,
+		Name:        product.Name,
+		Price:       product.Price,
+		Description: product.Description,
 	}
 }
 

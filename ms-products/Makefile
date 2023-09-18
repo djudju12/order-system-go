@@ -27,5 +27,8 @@ server:
 
 mock:
 	mockgen -package mockdb -destination db/mock/product_mock.go github.com/djudju12/ms-products/db/sqlc Querier
-	
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc startdb server mock
+
+mockservice:
+	mockgen -package mockservice -destination service/mock/product_mock.go github.com/djudju12/ms-products/service ProductService
+
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc startdb server mock mockservice

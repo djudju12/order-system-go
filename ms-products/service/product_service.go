@@ -32,7 +32,7 @@ func (ps *productService) GetProduct(ctx context.Context, productID int32) (*mod
 		return nil, err
 	}
 
-	return &model.Product{Product: product}, nil
+	return model.ProductDbToModel(product), nil
 }
 
 func (ps *productService) CreateProduct(ctx context.Context, req model.CreateProductRequest) (*model.Product, error) {
@@ -43,7 +43,7 @@ func (ps *productService) CreateProduct(ctx context.Context, req model.CreatePro
 		return nil, err
 	}
 
-	return &model.Product{Product: product}, nil
+	return model.ProductDbToModel(product), nil
 }
 
 func (ps *productService) ListProducts(ctx context.Context, req model.ListProductsRquest) ([]*model.Product, error) {
