@@ -16,3 +16,7 @@ SELECT * FROM products
 ORDER BY id
 LIMIT $1
 OFFSET $2; 
+
+-- name: DeleteProduct :exec
+DELETE FROM products
+WHERE id = $1;

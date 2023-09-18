@@ -1,49 +1,45 @@
 package service
 
 import (
+	"context"
 	"database/sql"
-	"net/http"
 
 	"github.com/djudju12/order-system/ms-products/model"
 	dbproducts "github.com/djudju12/order-system/ms-products/repository/sqlc"
 	"github.com/gin-gonic/gin"
 )
 
-type ProductService struct {
+type ProductService interface {
+	GetProduct(ctx context.Context, productID int32) (*model.Product, error)
+	CreateProduct(ctx *gin.Context, req model.CreateProductRequest) (*model.Product, error)
+	ListProducts(ctx *gin.Context, req model.ListProductsRquest) ([]*model.Product, error)
+	DeleteProduct(ctx *gin.Context, productID int32) error
+}
+
+type productService struct {
 	repository *dbproducts.Queries
 	db         *sql.DB
 }
 
-func NewProcutService(db *sql.DB) *ProductService {
-	return &ProductService{
+var _ ProductService = (*productService)(nil)
+
+func NewProcutService(db *sql.DB) ProductService {
+	return &productService{
 		db:         db,
 		repository: dbproducts.New(db),
 	}
 }
 
-func (ps *ProductService) GetProduct(ctx *gin.Context) {
-	var req model.GetProductRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
-	product, err := ps.repository.GetProduct(ctx, req.ID)
+func (ps *productService) GetProduct(ctx context.Context, productID int32) (*model.Product, error) {
+	product, err := ps.repository.GetProduct(ctx, int32(productID))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
+		return nil, err
 	}
 
-	ctx.JSON(http.StatusOK, product)
+	return &model.Product{Product: product}, nil
 }
 
-func (ps *ProductService) CreateProduct(ctx *gin.Context) {
-	var req model.CreateProductRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-
+func (ps *productService) CreateProduct(ctx *gin.Context, req model.CreateProductRequest) (*model.Product, error) {
 	arg := dbproducts.CreateProductParams{
 		Name:        req.Name,
 		Price:       req.Price,
@@ -52,13 +48,36 @@ func (ps *ProductService) CreateProduct(ctx *gin.Context) {
 
 	product, err := ps.repository.CreateProduct(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
+		return nil, err
 	}
 
-	ctx.JSON(http.StatusCreated, product)
+	return &model.Product{Product: product}, nil
 }
 
-func errorResponse(err error) gin.H {
-	return gin.H{"error": err.Error()}
+func (ps *productService) ListProducts(ctx *gin.Context, req model.ListProductsRquest) ([]*model.Product, error) {
+	arg := dbproducts.ListProductsParams{
+		Limit:  req.PageSize,
+		Offset: (req.PageID - 1) * req.PageSize,
+	}
+
+	products, err := ps.repository.ListProducts(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*model.Product, 0)
+	for _, product := range products {
+		result = append(result, &model.Product{Product: product})
+	}
+
+	return result, nil
+}
+
+func (ps *productService) DeleteProduct(ctx *gin.Context, productID int32) error {
+	_, err := ps.repository.GetProduct(ctx, productID)
+	if err != nil {
+		return err
+	}
+
+	return ps.repository.DeleteProduct(ctx, productID)
 }

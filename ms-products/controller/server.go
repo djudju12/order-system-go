@@ -23,10 +23,9 @@ func NewServer(controller ProductController) *Server {
 
 	const productsPath = "/products"
 	router.GET(joinPath(productsPath, "/:id"), controller.getProduct)
+	router.GET(productsPath, controller.listProducts)
 	router.POST(productsPath, controller.createProduct)
-	// router.DELETE(productsPath, controller.DeleteProduct)
-	// router.GET(path(productsPath), controller.ListProducts)
-	// router.DELETE(path(productsPath), controller.DeleteProduct)
+	router.DELETE(joinPath(productsPath, "/:id"), controller.deleteProduct)
 
 	return &Server{
 		controller: controller,
