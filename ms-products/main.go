@@ -22,7 +22,8 @@ func main() {
 	}
 
 	service := service.NewProcutService(conn)
-	server := controller.NewServer(service)
+	ctrl := controller.New(service)
+	server := controller.NewServer(ctrl)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {

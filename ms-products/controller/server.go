@@ -3,7 +3,6 @@ package controller
 import (
 	"strings"
 
-	"github.com/djudju12/order-system/ms-products/service"
 	"github.com/djudju12/order-system/ms-products/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -11,11 +10,11 @@ import (
 )
 
 type Server struct {
-	service *service.ProductService
-	router  *gin.Engine
+	controller ProductController
+	router     *gin.Engine
 }
 
-func NewServer(service *service.ProductService) *Server {
+func NewServer(controller ProductController) *Server {
 	router := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
@@ -23,12 +22,15 @@ func NewServer(service *service.ProductService) *Server {
 	}
 
 	const productsPath = "/products"
-	router.GET(path(productsPath, "/:id"), service.GetProduct)
-	router.POST(path(productsPath), service.CreateProduct)
+	router.GET(joinPath(productsPath, "/:id"), controller.getProduct)
+	router.POST(productsPath, controller.createProduct)
+	// router.DELETE(productsPath, controller.DeleteProduct)
+	// router.GET(path(productsPath), controller.ListProducts)
+	// router.DELETE(path(productsPath), controller.DeleteProduct)
 
 	return &Server{
-		service: service,
-		router:  router,
+		controller: controller,
+		router:     router,
 	}
 }
 
@@ -36,7 +38,7 @@ func (s *Server) Start(address string) error {
 	return s.router.Run(address)
 }
 
-func path(path ...string) string {
+func joinPath(path ...string) string {
 	var sb strings.Builder
 	for _, c := range path {
 		sb.WriteString(c)
