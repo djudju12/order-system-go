@@ -1,9 +1,9 @@
 version: "1"
 packages:
-  - name: "repository"
-    path: "./repository/sqlc"
-    queries: "./repository/query"
-    schema: "./repository/migrations"
+  - name: "db"
+    path: "./db/sqlc"
+    queries: "./db/query"
+    schema: "./db/migrations"
     engine: "postgresql"
     emit_json_tags: true
     emit_prepared_queries: false

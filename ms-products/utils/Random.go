@@ -43,3 +43,7 @@ func RandomProductPrice() string {
 	numsZero := "0123456789"
 	return fmt.Sprintf("%s.%s", RandomString(3, nums), RandomString(2, numsZero))
 }
+
+func RandomProductID() int32 {
+	return int32(random.Intn(1000))
+}

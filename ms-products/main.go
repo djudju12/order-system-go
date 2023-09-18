@@ -6,8 +6,10 @@ import (
 
 	"github.com/djudju12/ms-products/configs"
 	"github.com/djudju12/ms-products/controller"
+	db "github.com/djudju12/ms-products/db/sqlc"
 	"github.com/djudju12/ms-products/service"
 	_ "github.com/lib/pq"
+	_ "go.uber.org/mock/mockgen/model"
 )
 
 func main() {
@@ -21,7 +23,8 @@ func main() {
 		log.Fatal("cannot open db connection:", err)
 	}
 
-	service := service.NewProcutService(conn)
+	repository := db.New(conn)
+	service := service.NewProductService(repository)
 	ctrl := controller.New(service)
 	server := controller.NewServer(ctrl)
 

@@ -1,9 +1,9 @@
 package model
 
-import repository "github.com/djudju12/ms-products/repository/sqlc"
+import db "github.com/djudju12/ms-products/db/sqlc"
 
 type Product struct {
-	repository.Product
+	db.Product
 }
 
 type ListProductsRquest struct {
@@ -23,4 +23,34 @@ type GetProductRequest struct {
 
 type DeleteProductRequest struct {
 	ID int32 `uri:"id" binding:"required,min=1"`
+}
+
+func (req *ListProductsRquest) ToDB() db.ListProductsParams {
+	return db.ListProductsParams{
+		Limit:  req.PageSize,
+		Offset: (req.PageID - 1) * req.PageSize,
+	}
+}
+
+func (req *CreateProductRequest) ToDB() db.CreateProductParams {
+	return db.CreateProductParams{
+		Name:        req.Name,
+		Price:       req.Price,
+		Description: req.Description,
+	}
+}
+
+func ProductDbToModel(product db.Product) *Product {
+	return &Product{
+		Product: product,
+	}
+}
+
+func ListProductsDbToModel(products []db.Product) []*Product {
+	result := make([]*Product, 0)
+	for _, product := range products {
+		result = append(result, ProductDbToModel(product))
+	}
+
+	return result
 }

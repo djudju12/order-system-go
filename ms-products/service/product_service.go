@@ -2,36 +2,32 @@ package service
 
 import (
 	"context"
-	"database/sql"
 
+	db "github.com/djudju12/ms-products/db/sqlc"
 	"github.com/djudju12/ms-products/model"
-	dbproducts "github.com/djudju12/ms-products/repository/sqlc"
-	"github.com/gin-gonic/gin"
 )
 
 type ProductService interface {
 	GetProduct(ctx context.Context, productID int32) (*model.Product, error)
-	CreateProduct(ctx *gin.Context, req model.CreateProductRequest) (*model.Product, error)
-	ListProducts(ctx *gin.Context, req model.ListProductsRquest) ([]*model.Product, error)
-	DeleteProduct(ctx *gin.Context, productID int32) error
+	CreateProduct(ctx context.Context, req model.CreateProductRequest) (*model.Product, error)
+	ListProducts(ctx context.Context, req model.ListProductsRquest) ([]*model.Product, error)
+	DeleteProduct(ctx context.Context, productID int32) error
 }
 
 type productService struct {
-	repository *dbproducts.Queries
-	db         *sql.DB
+	repository db.Querier
 }
 
 var _ ProductService = (*productService)(nil)
 
-func NewProcutService(db *sql.DB) ProductService {
+func NewProductService(repository db.Querier) ProductService {
 	return &productService{
-		db:         db,
-		repository: dbproducts.New(db),
+		repository: repository,
 	}
 }
 
 func (ps *productService) GetProduct(ctx context.Context, productID int32) (*model.Product, error) {
-	product, err := ps.repository.GetProduct(ctx, int32(productID))
+	product, err := ps.repository.GetProduct(ctx, productID)
 	if err != nil {
 		return nil, err
 	}
@@ -39,12 +35,8 @@ func (ps *productService) GetProduct(ctx context.Context, productID int32) (*mod
 	return &model.Product{Product: product}, nil
 }
 
-func (ps *productService) CreateProduct(ctx *gin.Context, req model.CreateProductRequest) (*model.Product, error) {
-	arg := dbproducts.CreateProductParams{
-		Name:        req.Name,
-		Price:       req.Price,
-		Description: req.Description,
-	}
+func (ps *productService) CreateProduct(ctx context.Context, req model.CreateProductRequest) (*model.Product, error) {
+	arg := req.ToDB()
 
 	product, err := ps.repository.CreateProduct(ctx, arg)
 	if err != nil {
@@ -54,26 +46,18 @@ func (ps *productService) CreateProduct(ctx *gin.Context, req model.CreateProduc
 	return &model.Product{Product: product}, nil
 }
 
-func (ps *productService) ListProducts(ctx *gin.Context, req model.ListProductsRquest) ([]*model.Product, error) {
-	arg := dbproducts.ListProductsParams{
-		Limit:  req.PageSize,
-		Offset: (req.PageID - 1) * req.PageSize,
-	}
+func (ps *productService) ListProducts(ctx context.Context, req model.ListProductsRquest) ([]*model.Product, error) {
+	arg := req.ToDB()
 
 	products, err := ps.repository.ListProducts(ctx, arg)
 	if err != nil {
 		return nil, err
 	}
 
-	result := make([]*model.Product, 0)
-	for _, product := range products {
-		result = append(result, &model.Product{Product: product})
-	}
-
-	return result, nil
+	return model.ListProductsDbToModel(products), nil
 }
 
-func (ps *productService) DeleteProduct(ctx *gin.Context, productID int32) error {
+func (ps *productService) DeleteProduct(ctx context.Context, productID int32) error {
 	_, err := ps.repository.GetProduct(ctx, productID)
 	if err != nil {
 		return err

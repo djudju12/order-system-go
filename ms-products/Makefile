@@ -11,10 +11,10 @@ dropdb:
 	docker exec -it postgres14 dropdb ms_products
 
 migrateup:
-	migrate -path repository/migrations -database "postgresql://root:secret@localhost:5432/ms_products?sslmode=disable" -verbose up
+	migrate -path db/migrations -database "postgresql://root:secret@localhost:5432/ms_products?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path repository/migrations -database "postgresql://root:secret@localhost:5432/ms_products?sslmode=disable" -verbose down
+	migrate -path db/migrations -database "postgresql://root:secret@localhost:5432/ms_products?sslmode=disable" -verbose down
 
 sqlc:
 	sqlc generate
@@ -26,6 +26,6 @@ server:
 	go run main.go
 
 mock:
-	mockgen -package mockdb -destination repository/mock/products.go github.com/djudju12/ms-products/repository/sqlc Querier 	
-
+	mockgen -package mockdb -destination db/mock/product_mock.go github.com/djudju12/ms-products/db/sqlc Querier
+	
 .PHONY: postgres createdb dropdb migrateup migratedown sqlc startdb server mock

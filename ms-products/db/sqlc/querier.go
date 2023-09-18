@@ -2,14 +2,14 @@
 // versions:
 //   sqlc v1.21.0
 
-package repository
+package db
 
 import (
 	"context"
 )
 
 type Querier interface {
-	CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error)
+	CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) 
 	DeleteProduct(ctx context.Context, id int32) error
 	GetProduct(ctx context.Context, id int32) (Product, error)
 	ListProducts(ctx context.Context, arg ListProductsParams) ([]Product, error)

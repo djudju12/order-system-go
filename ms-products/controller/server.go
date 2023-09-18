@@ -26,7 +26,6 @@ func NewServer(controller ProductController) *Server {
 	router.GET(productsPath, controller.listProducts)
 	router.POST(productsPath, controller.createProduct)
 	router.DELETE(joinPath(productsPath, "/:id"), controller.deleteProduct)
-
 	return &Server{
 		controller: controller,
 		router:     router,
