@@ -11,7 +11,8 @@ type ProductService interface {
 	GetProduct(ctx context.Context, productID int32) (*model.Product, error)
 	CreateProduct(ctx context.Context, req model.CreateProductRequest) (*model.Product, error)
 	ListProducts(ctx context.Context, req model.ListProductsRquest) ([]*model.Product, error)
-	DeleteProduct(ctx context.Context, productID int32) error
+	UpdateProductStatus(ctx context.Context, req model.UpdateProductStatusRequest) (*model.Product, error)
+	InactiveProduct(ctx context.Context, productID int32) error
 }
 
 type productService struct {
@@ -57,11 +58,27 @@ func (ps *productService) ListProducts(ctx context.Context, req model.ListProduc
 	return model.ListProductsDbToModel(products), nil
 }
 
-func (ps *productService) DeleteProduct(ctx context.Context, productID int32) error {
-	_, err := ps.repository.GetProduct(ctx, productID)
+func (ps *productService) UpdateProductStatus(ctx context.Context, req model.UpdateProductStatusRequest) (*model.Product, error) {
+	arg := req.ToDB()
+
+	product, err := ps.repository.UpdateProductStatus(ctx, arg)
+	if err != nil {
+		return nil, err
+	}
+
+	return model.ProductDbToModel(product), nil
+}
+
+func (ps *productService) InactiveProduct(ctx context.Context, productID int32) error {
+	arg := db.UpdateProductStatusParams{
+		ID:     productID,
+		Status: "inactive",
+	}
+
+	_, err := ps.repository.UpdateProductStatus(ctx, arg)
 	if err != nil {
 		return err
 	}
 
-	return ps.repository.DeleteProduct(ctx, productID)
+	return nil
 }

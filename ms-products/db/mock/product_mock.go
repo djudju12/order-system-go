@@ -54,20 +54,6 @@ func (mr *MockQuerierMockRecorder) CreateProduct(arg0, arg1 any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProduct", reflect.TypeOf((*MockQuerier)(nil).CreateProduct), arg0, arg1)
 }
 
-// DeleteProduct mocks base method.
-func (m *MockQuerier) DeleteProduct(arg0 context.Context, arg1 int32) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteProduct", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteProduct indicates an expected call of DeleteProduct.
-func (mr *MockQuerierMockRecorder) DeleteProduct(arg0, arg1 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteProduct", reflect.TypeOf((*MockQuerier)(nil).DeleteProduct), arg0, arg1)
-}
-
 // GetProduct mocks base method.
 func (m *MockQuerier) GetProduct(arg0 context.Context, arg1 int32) (db.Product, error) {
 	m.ctrl.T.Helper()
@@ -96,4 +82,19 @@ func (m *MockQuerier) ListProducts(arg0 context.Context, arg1 db.ListProductsPar
 func (mr *MockQuerierMockRecorder) ListProducts(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListProducts", reflect.TypeOf((*MockQuerier)(nil).ListProducts), arg0, arg1)
+}
+
+// UpdateProductStatus mocks base method.
+func (m *MockQuerier) UpdateProductStatus(arg0 context.Context, arg1 db.UpdateProductStatusParams) (db.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateProductStatus", arg0, arg1)
+	ret0, _ := ret[0].(db.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateProductStatus indicates an expected call of UpdateProductStatus.
+func (mr *MockQuerierMockRecorder) UpdateProductStatus(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProductStatus", reflect.TypeOf((*MockQuerier)(nil).UpdateProductStatus), arg0, arg1)
 }

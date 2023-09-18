@@ -267,7 +267,7 @@ func TestListProduct(t *testing.T) {
 	}
 }
 
-func TestDeleteProduct(t *testing.T) {
+func TestInactiveProduct(t *testing.T) {
 	productID := utils.RandomProductID()
 	testCases := []struct {
 		name          string
@@ -280,7 +280,7 @@ func TestDeleteProduct(t *testing.T) {
 			productID: productID,
 			buildStubs: func(service *mockservice.MockProductService) {
 				service.EXPECT().
-					DeleteProduct(gomock.Any(), gomock.Eq(productID)).
+					InactiveProduct(gomock.Any(), gomock.Eq(productID)).
 					Times(1).
 					Return(nil)
 			},
@@ -289,11 +289,11 @@ func TestDeleteProduct(t *testing.T) {
 			},
 		},
 		{
-			name:      "OK",
+			name:      "Not Found",
 			productID: productID,
 			buildStubs: func(service *mockservice.MockProductService) {
 				service.EXPECT().
-					DeleteProduct(gomock.Any(), gomock.Eq(productID)).
+					InactiveProduct(gomock.Any(), gomock.Eq(productID)).
 					Times(1).
 					Return(sql.ErrNoRows)
 			},
@@ -306,7 +306,7 @@ func TestDeleteProduct(t *testing.T) {
 			productID: 0,
 			buildStubs: func(service *mockservice.MockProductService) {
 				service.EXPECT().
-					DeleteProduct(gomock.Any(), gomock.Any()).
+					InactiveProduct(gomock.Any(), gomock.Any()).
 					Times(0)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
@@ -318,7 +318,7 @@ func TestDeleteProduct(t *testing.T) {
 			productID: productID,
 			buildStubs: func(service *mockservice.MockProductService) {
 				service.EXPECT().
-					DeleteProduct(gomock.Any(), gomock.Eq(productID)).
+					InactiveProduct(gomock.Any(), gomock.Eq(productID)).
 					Times(1).
 					Return(sql.ErrConnDone)
 			},
@@ -337,6 +337,95 @@ func TestDeleteProduct(t *testing.T) {
 			tC.buildStubs(test.productService)
 
 			request, err := http.NewRequest(http.MethodDelete, test.url, nil)
+			require.NoError(t, err)
+
+			// when
+			test.server.router.ServeHTTP(test.recorder, request)
+
+			// then
+			tC.checkResponse(t, test.recorder)
+		})
+	}
+}
+
+func TestUpdateProductStatus(t *testing.T) {
+	product := RandomProduct()
+	request := model.UpdateProductStatusRequest{
+		ID:     product.ID,
+		Status: "out_of_stock",
+	}
+
+	testCases := []struct {
+		name          string
+		request       model.UpdateProductStatusRequest
+		buildStubs    func(service *mockservice.MockProductService)
+		checkResponse func(t *testing.T, recored *httptest.ResponseRecorder)
+	}{
+		{
+			name:    "OK",
+			request: request,
+			buildStubs: func(service *mockservice.MockProductService) {
+				service.EXPECT().
+					UpdateProductStatus(gomock.Any(), gomock.Eq(request)).
+					Times(1).
+					Return(product, nil)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+			},
+		},
+		{
+			name: "Bad Request",
+			request: model.UpdateProductStatusRequest{
+				ID:     0,
+				Status: "out_of_stock",
+			},
+			buildStubs: func(service *mockservice.MockProductService) {
+				service.EXPECT().
+					UpdateProductStatus(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+		{
+			name:    "Not Found",
+			request: request,
+			buildStubs: func(service *mockservice.MockProductService) {
+				service.EXPECT().
+					UpdateProductStatus(gomock.Any(), gomock.Eq(request)).
+					Times(1).
+					Return(&model.Product{}, sql.ErrNoRows)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusNotFound, recorder.Code)
+			},
+		},
+		{
+			name:    "Internal Server Error",
+			request: request,
+			buildStubs: func(service *mockservice.MockProductService) {
+				service.EXPECT().
+					UpdateProductStatus(gomock.Any(), gomock.Eq(request)).
+					Times(1).
+					Return(&model.Product{}, sql.ErrConnDone)
+			},
+			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusInternalServerError, recorder.Code)
+			},
+		},
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.name, func(t *testing.T) {
+			// given
+			url := "/products"
+
+			test := NewTest(t, url)
+			tC.buildStubs(test.productService)
+
+			request, err := http.NewRequest(http.MethodPatch, test.url, toReader(t, tC.request))
 			require.NoError(t, err)
 
 			// when

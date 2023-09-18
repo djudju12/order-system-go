@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	mockdb "github.com/djudju12/ms-products/db/mock"
 	db "github.com/djudju12/ms-products/db/sqlc"
@@ -191,7 +192,66 @@ func TestListProduct(t *testing.T) {
 	}
 }
 
-func TestDeleteProduct(t *testing.T) {
+func TestUpdateProduct(t *testing.T) {
+	product := RandomProduct()
+	request := model.UpdateProductStatusRequest{
+		ID:     product.ID,
+		Status: "out_of_stock",
+	}
+
+	testCases := []struct {
+		name       string
+		request    model.UpdateProductStatusRequest
+		buildStubs func(repository *mockdb.MockQuerier)
+		check      func(t *testing.T, productModel *model.Product, err error)
+	}{
+		{
+			name:    "Happy case",
+			request: request,
+			buildStubs: func(repository *mockdb.MockQuerier) {
+				expectedArg := db.UpdateProductStatusParams{
+					ID:     request.ID,
+					Status: request.Status,
+				}
+
+				repository.EXPECT().
+					UpdateProductStatus(gomock.Any(), gomock.Eq(expectedArg)).
+					Times(1).
+					Return(product, nil)
+			},
+			check: func(t *testing.T, productModel *model.Product, err error) {
+				require.NoError(t, err)
+				require.Equal(t, productModel, model.ProductDbToModel(product))
+			},
+		},
+		{
+			name:    "Repository returns an error",
+			request: request,
+			buildStubs: func(repository *mockdb.MockQuerier) {
+				repository.EXPECT().
+					UpdateProductStatus(gomock.Any(), gomock.Any()).
+					Times(1).
+					Return(db.Product{}, errors.New("some error"))
+			},
+			check: func(t *testing.T, productModel *model.Product, err error) {
+				require.Error(t, err)
+			},
+		},
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.name, func(t *testing.T) {
+			test := NewTest(t)
+			tC.buildStubs(test.repository)
+
+			p, err := test.service.UpdateProductStatus(context.Background(), tC.request)
+
+			tC.check(t, p, err)
+		})
+	}
+}
+
+func TestInactiveProduct(t *testing.T) {
 	product := RandomProduct()
 
 	testCases := []struct {
@@ -204,32 +264,28 @@ func TestDeleteProduct(t *testing.T) {
 			name:      "Happy case",
 			productID: product.ID,
 			buildStubs: func(repository *mockdb.MockQuerier) {
-				repository.EXPECT().
-					GetProduct(gomock.Any(), gomock.Eq(product.ID)).
-					Times(1).
-					Return(db.Product{}, nil)
+				expectedArg := db.UpdateProductStatusParams{
+					ID:     product.ID,
+					Status: "inactive",
+				}
 
 				repository.EXPECT().
-					DeleteProduct(gomock.Any(), gomock.Eq(product.ID)).
+					UpdateProductStatus(gomock.Any(), gomock.Eq(expectedArg)).
 					Times(1).
-					Return(nil)
+					Return(db.Product{}, nil)
 			},
 			check: func(t *testing.T, err error) {
 				require.NoError(t, err)
 			},
 		},
 		{
-			name:      "Product not found",
+			name:      "Repository returns an error",
 			productID: product.ID,
 			buildStubs: func(repository *mockdb.MockQuerier) {
 				repository.EXPECT().
-					GetProduct(gomock.Any(), gomock.Eq(product.ID)).
+					UpdateProductStatus(gomock.Any(), gomock.Any()).
 					Times(1).
 					Return(db.Product{}, errors.New("some error"))
-
-				repository.EXPECT().
-					DeleteProduct(gomock.Any(), gomock.Eq(product.ID)).
-					Times(0)
 			},
 			check: func(t *testing.T, err error) {
 				require.Error(t, err)
@@ -242,7 +298,7 @@ func TestDeleteProduct(t *testing.T) {
 			test := NewTest(t)
 			tC.buildStubs(test.repository)
 
-			err := test.service.DeleteProduct(context.Background(), tC.productID)
+			err := test.service.InactiveProduct(context.Background(), tC.productID)
 
 			tC.check(t, err)
 		})
@@ -255,5 +311,8 @@ func RandomProduct() db.Product {
 		Name:        utils.RandomProductName(),
 		Price:       utils.RandomProductPrice(),
 		Description: utils.RandomProductDescription(),
+		Status:      "active",
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 }

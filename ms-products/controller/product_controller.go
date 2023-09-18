@@ -13,7 +13,8 @@ type ProductController interface {
 	getProduct(ctx *gin.Context)
 	createProduct(ctx *gin.Context)
 	listProducts(ctx *gin.Context)
-	deleteProduct(ctx *gin.Context)
+	inactiveProduct(ctx *gin.Context)
+	updateProductStatus(ctx *gin.Context)
 }
 
 type productController struct {
@@ -83,14 +84,14 @@ func (pc *productController) listProducts(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, products)
 }
 
-func (pc *productController) deleteProduct(ctx *gin.Context) {
+func (pc *productController) inactiveProduct(ctx *gin.Context) {
 	var req model.DeleteProductRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	err := pc.service.DeleteProduct(ctx, req.ID)
+	err := pc.service.InactiveProduct(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -102,4 +103,25 @@ func (pc *productController) deleteProduct(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusOK)
+}
+
+func (pc *productController) updateProductStatus(ctx *gin.Context) {
+	var req model.UpdateProductStatusRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	product, err := pc.service.UpdateProductStatus(ctx, req)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, product)
 }

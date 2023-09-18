@@ -54,20 +54,6 @@ func (mr *MockProductServiceMockRecorder) CreateProduct(arg0, arg1 any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateProduct", reflect.TypeOf((*MockProductService)(nil).CreateProduct), arg0, arg1)
 }
 
-// DeleteProduct mocks base method.
-func (m *MockProductService) DeleteProduct(arg0 context.Context, arg1 int32) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteProduct", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteProduct indicates an expected call of DeleteProduct.
-func (mr *MockProductServiceMockRecorder) DeleteProduct(arg0, arg1 any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteProduct", reflect.TypeOf((*MockProductService)(nil).DeleteProduct), arg0, arg1)
-}
-
 // GetProduct mocks base method.
 func (m *MockProductService) GetProduct(arg0 context.Context, arg1 int32) (*model.Product, error) {
 	m.ctrl.T.Helper()
@@ -83,6 +69,20 @@ func (mr *MockProductServiceMockRecorder) GetProduct(arg0, arg1 any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProduct", reflect.TypeOf((*MockProductService)(nil).GetProduct), arg0, arg1)
 }
 
+// InactiveProduct mocks base method.
+func (m *MockProductService) InactiveProduct(arg0 context.Context, arg1 int32) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InactiveProduct", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// InactiveProduct indicates an expected call of InactiveProduct.
+func (mr *MockProductServiceMockRecorder) InactiveProduct(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InactiveProduct", reflect.TypeOf((*MockProductService)(nil).InactiveProduct), arg0, arg1)
+}
+
 // ListProducts mocks base method.
 func (m *MockProductService) ListProducts(arg0 context.Context, arg1 model.ListProductsRquest) ([]*model.Product, error) {
 	m.ctrl.T.Helper()
@@ -96,4 +96,19 @@ func (m *MockProductService) ListProducts(arg0 context.Context, arg1 model.ListP
 func (mr *MockProductServiceMockRecorder) ListProducts(arg0, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListProducts", reflect.TypeOf((*MockProductService)(nil).ListProducts), arg0, arg1)
+}
+
+// UpdateProductStatus mocks base method.
+func (m *MockProductService) UpdateProductStatus(arg0 context.Context, arg1 model.UpdateProductStatusRequest) (*model.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateProductStatus", arg0, arg1)
+	ret0, _ := ret[0].(*model.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateProductStatus indicates an expected call of UpdateProductStatus.
+func (mr *MockProductServiceMockRecorder) UpdateProductStatus(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProductStatus", reflect.TypeOf((*MockProductService)(nil).UpdateProductStatus), arg0, arg1)
 }
