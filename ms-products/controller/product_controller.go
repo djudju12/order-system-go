@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"net/http"
 
-	"github.com/djudju12/order-system/ms-products/model"
-	"github.com/djudju12/order-system/ms-products/service"
+	"github.com/djudju12/ms-products/model"
+	"github.com/djudju12/ms-products/service"
 	"github.com/gin-gonic/gin"
 )
 

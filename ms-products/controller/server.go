@@ -3,7 +3,7 @@ package controller
 import (
 	"strings"
 
-	"github.com/djudju12/order-system/ms-products/utils"
+	"github.com/djudju12/ms-products/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"

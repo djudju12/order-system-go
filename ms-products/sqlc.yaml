@@ -1,6 +1,6 @@
 version: "1"
 packages:
-  - name: "dbproducts"
+  - name: "repository"
     path: "./repository/sqlc"
     queries: "./repository/query"
     schema: "./repository/migrations"

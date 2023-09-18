@@ -3,7 +3,7 @@
 //   sqlc v1.21.0
 // source: products.sql
 
-package dbproducts
+package repository
 
 import (
 	"context"

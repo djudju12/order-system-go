@@ -4,8 +4,8 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/djudju12/order-system/ms-products/model"
-	dbproducts "github.com/djudju12/order-system/ms-products/repository/sqlc"
+	"github.com/djudju12/ms-products/model"
+	dbproducts "github.com/djudju12/ms-products/repository/sqlc"
 	"github.com/gin-gonic/gin"
 )
 

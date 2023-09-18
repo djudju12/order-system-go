@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.21.0
 
-package dbproducts
+package repository
 
 import ()
 

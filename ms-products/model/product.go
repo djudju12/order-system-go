@@ -1,9 +1,9 @@
 package model
 
-import dbproducts "github.com/djudju12/order-system/ms-products/repository/sqlc"
+import repository "github.com/djudju12/ms-products/repository/sqlc"
 
 type Product struct {
-	dbproducts.Product
+	repository.Product
 }
 
 type ListProductsRquest struct {

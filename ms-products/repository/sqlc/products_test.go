@@ -1,10 +1,10 @@
-package dbproducts
+package repository
 
 import (
 	"context"
 	"testing"
 
-	"github.com/djudju12/order-system/ms-products/utils"
+	"github.com/djudju12/ms-products/utils"
 	"github.com/stretchr/testify/require"
 )
 

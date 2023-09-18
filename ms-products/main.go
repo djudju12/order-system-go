@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/djudju12/order-system/ms-products/configs"
-	"github.com/djudju12/order-system/ms-products/controller"
-	"github.com/djudju12/order-system/ms-products/service"
+	"github.com/djudju12/ms-products/configs"
+	"github.com/djudju12/ms-products/controller"
+	"github.com/djudju12/ms-products/service"
 	_ "github.com/lib/pq"
 )
 

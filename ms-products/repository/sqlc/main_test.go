@@ -1,4 +1,4 @@
-package dbproducts
+package repository
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/djudju12/order-system/ms-products/configs"
+	"github.com/djudju12/ms-products/configs"
 	_ "github.com/lib/pq"
 )
 
