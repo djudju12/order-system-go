@@ -352,7 +352,7 @@ func TestUpdateProductStatus(t *testing.T) {
 	product := RandomProduct()
 	request := model.UpdateProductStatusRequest{
 		ID:     product.ID,
-		Status: "out_of_stock",
+		Status: model.ProductStatusOutOfStock,
 	}
 
 	testCases := []struct {
@@ -377,8 +377,8 @@ func TestUpdateProductStatus(t *testing.T) {
 		{
 			name: "Bad Request",
 			request: model.UpdateProductStatusRequest{
-				ID:     0,
-				Status: "out_of_stock",
+				ID:     product.ID,
+				Status: "some random status",
 			},
 			buildStubs: func(service *mockservice.MockProductService) {
 				service.EXPECT().

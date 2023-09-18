@@ -6,6 +6,12 @@ import (
 	db "github.com/djudju12/ms-products/db/sqlc"
 )
 
+const (
+	ProductStatusOutOfStock = "out_of_stock"
+	ProductStatusAvailable  = "available"
+	ProductStatusInactive   = "inactive"
+)
+
 type Product struct {
 	ID          int32     `json:"id"`
 	Name        string    `json:"name"`
@@ -77,7 +83,7 @@ func (req *CreateProductRequest) ToDB() db.CreateProductParams {
 
 type UpdateProductStatusRequest struct {
 	ID     int32  `json:"id" binding:"required,min=1"`
-	Status string `json:"status" binding:"required,oneof=out_of_stock available"`
+	Status string `json:"status" binding:"required,status"`
 }
 
 func (req *UpdateProductStatusRequest) ToDB() db.UpdateProductStatusParams {

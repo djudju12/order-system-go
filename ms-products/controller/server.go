@@ -3,7 +3,7 @@ package controller
 import (
 	"strings"
 
-	"github.com/djudju12/ms-products/utils"
+	"github.com/djudju12/ms-products/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
@@ -18,7 +18,8 @@ func NewServer(controller ProductController) *Server {
 	router := gin.Default()
 
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterValidation("price", utils.ValidPrice)
+		v.RegisterValidation("price", model.ValidPrice)
+		v.RegisterValidation("status", model.ValidStatus)
 	}
 
 	const productsPath = "/products"

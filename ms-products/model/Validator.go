@@ -1,4 +1,4 @@
-package utils
+package model
 
 import (
 	"log"
@@ -24,4 +24,21 @@ func isValidPrice(price string) bool {
 	}
 
 	return matched
+}
+
+var ValidStatus validator.Func = func(fl validator.FieldLevel) bool {
+	if status, ok := fl.Field().Interface().(string); ok {
+		return isValidStatus(status)
+	}
+
+	return false
+}
+
+func isValidStatus(status string) bool {
+	switch status {
+	case ProductStatusAvailable, ProductStatusOutOfStock:
+		return true
+	}
+
+	return false
 }
